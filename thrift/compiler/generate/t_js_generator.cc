@@ -626,7 +626,7 @@ void t_js_generator::generate_js_struct_reader(ofstream& out,
 
 
   // Check for field STOP marker and break
-  indent(out) << "if (ftype == Thrift.Type.STOP) {" << endl;
+  indent(out) << "if (ftype === Thrift.Type.STOP) {" << endl;
   indent_up();
   indent(out) << "break;" << endl;
   indent_down();
@@ -641,7 +641,7 @@ void t_js_generator::generate_js_struct_reader(ofstream& out,
     for (f_iter = fields.begin(); f_iter != fields.end(); ++f_iter) {
 
       indent(out) << "case " << (*f_iter)->get_key() << ":" << endl;
-      indent(out) << "if (ftype == " << type_to_enum((*f_iter)->get_type()) << ") {" << endl;
+      indent(out) << "if (ftype === " << type_to_enum((*f_iter)->get_type()) << ") {" << endl;
 
       indent_up();
       generate_deserialize_field(out, *f_iter, "this.");
