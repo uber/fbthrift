@@ -530,9 +530,9 @@ void t_js_generator::generate_js_struct_definition(ofstream& out,
 
   if (gen_node_ && is_exception) {
       out << indent() << "Thrift.TException.call(this, \"" <<
-          js_namespace(tstruct->get_program()) << tstruct->get_name() << "\")" << endl;
+          js_namespace(tstruct->get_program()) << tstruct->get_name() << "\");" << endl;
       out << indent() << "this.name = \"" <<
-          js_namespace(tstruct->get_program()) << tstruct->get_name() << "\"" << endl;
+          js_namespace(tstruct->get_program()) << tstruct->get_name() << "\";" << endl;
   }
 
   //members with arguments
@@ -788,9 +788,9 @@ void t_js_generator::generate_service_processor(t_service* tservice) {
 
     scope_up(f_service_);
 
-    f_service_ << indent() << "this._handler = handler" << endl;
+    f_service_ << indent() << "this._handler = handler;" << endl;
 
-    scope_down(f_service_);
+    scope_down(f_service_, true);
 
     if (tservice->get_extends() != nullptr) {
         indent(f_service_) << "Thrift.inherits(" <<
@@ -818,7 +818,7 @@ void t_js_generator::generate_service_processor(t_service* tservice) {
                << indent() << "  output.flush();" << endl
                << indent() << "}" << endl;
 
-    scope_down(f_service_);
+    scope_down(f_service_, true);
     f_service_ << endl;
 
     // Generate the process subfunctions
@@ -876,11 +876,11 @@ void t_js_generator::generate_process_function(t_service* tservice,
     if (!first) {
         f_service_ << ", ";
     }
-    f_service_ << "function (err, result) {" << endl;
+    f_service_ << "function (err, ret) {" << endl;
     indent_up();
 
     f_service_ <<
-      indent() << "var result = new " << resultname << "((err != null ? err : {success: result}));" << endl <<
+      indent() << "var result = new " << resultname << "((err !== null ? err : {success: ret}));" << endl <<
       indent() << "output.writeMessageBegin(\"" << tfunction->get_name() <<
         "\", Thrift.MessageType.REPLY, seqid);" << endl <<
       indent() << "result.write(output);" << endl <<
@@ -888,9 +888,9 @@ void t_js_generator::generate_process_function(t_service* tservice,
       indent() << "output.flush();" << endl;
 
     indent_down();
-    indent(f_service_) << "})" << endl;
+    indent(f_service_) << "});" << endl;
 
-    scope_down(f_service_);
+    scope_down(f_service_, true);
     f_service_ << endl;
 }
 
