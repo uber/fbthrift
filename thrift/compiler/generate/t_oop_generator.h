@@ -47,9 +47,13 @@ class t_oop_generator : public t_generator {
     indent_up();
   }
 
-  void scope_down(std::ostream& out) {
+  void scope_down(std::ostream& out, bool semicolon = false) {
     indent_down();
-    indent(out) << "}" << std::endl;
+    indent(out) << "}";
+    if (semicolon) {
+       out << ";";
+    }
+    out << std::endl;
   }
 
   std::string upcase_string(std::string original) {
