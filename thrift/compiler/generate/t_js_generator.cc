@@ -519,10 +519,10 @@ void t_js_generator::generate_js_struct_definition(ofstream& out,
 
   if (gen_node_) {
     if (is_exported) {
-      out << js_namespace(tstruct->get_program()) << tstruct->get_name() << " = " <<
+      out << "var " << js_namespace(tstruct->get_program()) << tstruct->get_name() << " = " <<
         "module.exports." << tstruct->get_name() << " = function(args) {\n";
     } else {
-      out << js_namespace(tstruct->get_program()) << tstruct->get_name() << " = function(args) {\n";
+      out << "var " << js_namespace(tstruct->get_program()) << tstruct->get_name() << " = function(args) {\n";
     }
   } else {
     out << js_namespace(tstruct->get_program()) << tstruct->get_name() <<" = function(args) {\n";
@@ -621,7 +621,6 @@ void t_js_generator::generate_js_struct_reader(ofstream& out,
   scope_up(out);
 
   indent(out) << "var ret = input.readFieldBegin();" << endl;
-  indent(out) << "var fname = ret.fname;" << endl;
   indent(out) << "var ftype = ret.ftype;" << endl;
   indent(out) << "var fid = ret.fid;"   << endl;
 
@@ -784,7 +783,7 @@ void t_js_generator::generate_service_processor(t_service* tservice) {
     vector<t_function*>::iterator f_iter;
 
     f_service_ <<
-        js_namespace(tservice->get_program()) << service_name_ << "Processor = " <<
+        "var " << js_namespace(tservice->get_program()) << service_name_ << "Processor = " <<
         "exports.Processor = function(handler) ";
 
     scope_up(f_service_);
@@ -965,7 +964,7 @@ void t_js_generator::generate_service_client(t_service* tservice) {
 
   if (gen_node_) {
     f_service_ <<
-        js_namespace(tservice->get_program()) << service_name_ << "Client = " <<
+        "var " << js_namespace(tservice->get_program()) << service_name_ << "Client = " <<
         "exports.Client = function(output, pClass) {"<<endl;
   } else {
     f_service_ <<
@@ -1314,14 +1313,10 @@ void t_js_generator::generate_deserialize_container(ofstream &out,
                                                       t_type* ttype,
                                                       string prefix) {
   string size = tmp("_size");
-  string ktype = tmp("_ktype");
-  string vtype = tmp("_vtype");
   string etype = tmp("_etype");
   string rtmp3 = tmp("_rtmp3");
 
   t_field fsize(g_type_i32, size);
-  t_field fktype(g_type_byte, ktype);
-  t_field fvtype(g_type_byte, vtype);
   t_field fetype(g_type_byte, etype);
 
   out << indent() << "var " << size << " = 0;" << endl;
@@ -1331,13 +1326,9 @@ void t_js_generator::generate_deserialize_container(ofstream &out,
   // Declare variables, read header
   if (ttype->is_map()) {
       out <<
-          indent() << prefix << " = {};" << endl <<
-          indent() << "var " << ktype << " = 0;" << endl <<
-          indent() << "var " << vtype << " = 0;" << endl;
+          indent() << prefix << " = {};" << endl;
 
       out << indent() << rtmp3 << " = input.readMapBegin();" << endl;
-      out << indent() << ktype << " = " << rtmp3 << ".ktype;" << endl;
-      out << indent() << vtype << " = " << rtmp3 << ".vtype;" << endl;
       out << indent() << size  << " = " << rtmp3 << ".size;" << endl;
 
 
